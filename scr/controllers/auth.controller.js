@@ -27,7 +27,7 @@ export async function postSignUp(req, res) {
         const existingUser = await connection.query('SELECT email FROM users WHERE email = ($1)', [email]);
         if (existingUser.rows.length !== 0) { return res.sendStatus(409) };
 
-        await connection.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [name, email, passwordHash]);
+        await connection.query('INSERT INTO users (name, email, password, "createdAt") VALUES ($1, $2, $3, NOW())', [name, email, passwordHash]);
         return res.sendStatus(201);
 
     } catch (error) {
@@ -51,12 +51,18 @@ export async function postSignIn(req, res) {
         const existingUser = await connection.query('SELECT * FROM users WHERE email = ($1)', [email]);
         if (existingUser.rows.length === 0) { return res.sendStatus(401) };
 
+
         if (existingUser.rows.length !== 0 && bcrypt.compareSync(password, existingUser.rows[0].password)) {
 
             const token = uuid();
 
-            // PRECISA INSERIR O TOKEN NO BANCO DE DADOS?
-            // await db.collection("sessions").insertOne({ token, userId: user._id });
+            const newSession = await connection.query('SELECT * FROM sessions WHERE "userId"=($1)', [existingUser.rows[0].id]);
+
+            if (newSession.rows[0].length === 0) {
+                await connection.query('INSERT INTO sessions ("userId", token, "createdAt") VALUES ($1, $2, NOW());', [existingUser.rows[0].id, token]);
+            } else {
+                await connection.query('UPDATE sessions SET token=($1), "createdAt"=NOW() WHERE "userId" = ($2);', [token, existingUser.rows[0].id]);
+            }
 
             res.status(200).send({ token: token });
         } else {
