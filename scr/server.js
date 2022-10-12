@@ -4,7 +4,7 @@ import cors from 'cors'
 
 // routers import - LEMBRA DO .JS NO FINAL //
 import authRouter from './routes/auth.router.js';
-// import urlsRouter from './routes/urls.router.js';
+import urlsRouter from './routes/urls.router.js';
 
 const server = express();
 dotenv.config();
@@ -14,7 +14,7 @@ server.use(cors());
 // // auth
 server.use(authRouter);
 // // urls
-// server.use(urlsRouter);
+server.use(urlsRouter);
 // // users
 // server.use();
 // // ranking

@@ -13,7 +13,7 @@ export async function hasUser(req, res, next) {
         const user = await connection.query('SELECT * FROM users WHERE id = ($1)', [session.rows[0].userId]);
         if (user.rows.length === 0) { return res.sendStatus(404) };
 
-        res.locals.user = user;
+        res.locals.user = user.rows[0];
 
         next();
     } catch (error) {
