@@ -9,7 +9,7 @@ export async function postShorten(req, res) {
         const httpRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 
         const validUrl = httpRegex.test(url);
-        if (validUrl === false) { return res.sendStatus(422) }
+        if (validUrl === false) { return res.sendStatus(422) };
 
         const shortUrl = nanoid(8, url.id);
         await connection.query('INSERT INTO shortenedurls ("userId", url, "shortUrl","visitCount", "createdAt") VALUES ($1, $2, $3, $4, NOW())', [user.id, url, shortUrl, 0]);
@@ -56,7 +56,7 @@ export async function deleteShorten(req, res) {
 
     try {
         const existingUrl = await connection.query('SELECT * FROM shortenedurls WHERE "shortUrl" = ($1)', [id]);
-        if (validUrl.rows.length === 0) { return res.sendStatus(404) };
+        if (existingUrl.rows.length === 0) { return res.sendStatus(404) };
 
         const validUrl = await connection.query('SELECT * FROM shortenedurls WHERE "shortUrl" = ($1) AND "userId" = ($2)', [id, user.id]);
         if (validUrl.rows.length === 0) {
