@@ -56,7 +56,7 @@ export async function postSignIn(req, res) {
 
             const newSession = await connection.query('SELECT * FROM sessions WHERE "userId"=($1)', [existingUser.rows[0].id]);
 
-            if (newSession.rows[0].length === 0) {
+            if (newSession.rows.length === 0) {
                 await connection.query('INSERT INTO sessions ("userId", token, "createdAt") VALUES ($1, $2, NOW());', [existingUser.rows[0].id, token]);
             } else {
                 await connection.query('UPDATE sessions SET token=($1), "createdAt"=NOW() WHERE "userId" = ($2);', [token, existingUser.rows[0].id]);
