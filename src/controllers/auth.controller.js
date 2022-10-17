@@ -49,10 +49,9 @@ export async function postSignIn(req, res) {
 
     try {
         const existingUser = await connection.query('SELECT * FROM users WHERE email = ($1)', [email]);
-        if (existingUser.rows.length === 0) { return res.sendStatus(401) };
+        if (existingUser.rows[0].length === 0) { return res.sendStatus(401) };
 
-
-        if (existingUser.rows.length !== 0 && bcrypt.compareSync(password, existingUser.rows[0].password)) {
+        if (existingUser.rows[0].length !== 0 && bcrypt.compareSync(password, existingUser.rows[0].password)) {
 
             const token = uuid();
 
