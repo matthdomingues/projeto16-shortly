@@ -39,11 +39,10 @@ export async function redirectShorten(req, res) {
 
     try {
         const url = await connection.query('SELECT shortenedurls.url FROM shortenedurls WHERE "shortUrl" = ($1)', [shortUrl]);
-        if (!shortUrl.rows[0]) { return res.sendStatus(404) };
 
+        if (!url.rows[0]) { return res.sendStatus(404) };
         await connection.query('UPDATE shortenedurls SET "visitCount"= ("visitCount" + $1) WHERE "shortUrl" = ($2);', [1, shortUrl]);
-
-        return res.redirect(url);
+        return res.redirect(url.rows[0].url);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -55,10 +54,11 @@ export async function deleteShorten(req, res) {
     const { user } = res.locals;
 
     try {
-        const existingUrl = await connection.query('SELECT * FROM shortenedurls WHERE "shortUrl" = ($1)', [id]);
+        const existingUrl = await connection.query('SELECT * FROM shortenedurls WHERE id = ($1)', [id]);
+        console.log(existingUrl.rows[0])
         if (!existingUrl.rows[0]) { return res.sendStatus(404) };
 
-        const validUrl = await connection.query('SELECT * FROM shortenedurls WHERE "shortUrl" = ($1) AND "userId" = ($2)', [id, user.id]);
+        const validUrl = await connection.query('SELECT * FROM shortenedurls WHERE id = ($1) AND "userId" = ($2)', [id, user.id]);
         if (!validUrl.rows[0]) {
             return res.sendStatus(401);
         } else {

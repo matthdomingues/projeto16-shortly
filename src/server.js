@@ -21,10 +21,10 @@ server.use(usersRouter);
 // ranking
 server.use(rankingRouter);
 
-server.listen(process.env.PORT, () => {
-    console.log("Server running on port " + process.env.PORT);
-});
-
-// server.listen(4000, () => {
-//     console.log('Server listening on port 4000');
+// server.listen(process.env.PORT, () => {
+//     console.log("Server running on port " + process.env.PORT);
 // });
+
+server.listen(4000, () => {
+    console.log('Server listening on port 4000');
+});
